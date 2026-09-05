@@ -1,10 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { LoginForm } from "./features/auth/components/LoginForm";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1>🚀 My Awesome App is Running!</h1>
-    </div>
+    <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", backgroundColor: "#f7fafc" }}>
+      <LoginForm />
+    </main>
   </React.StrictMode>
 );
