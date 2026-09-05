@@ -1,0 +1,13 @@
+# Project Rules for AI Coding Assistants
+
+- Architecture: Feature-Driven Modular Architecture
+- Language: TypeScript (Strict mode)
+- Styling: Tailwind CSS
+- Framework: React + Vite
+
+## Rules for Code Generation:
+1. Always follow guidelines in `@ARCHITECTURE.md`.
+2. Place feature-specific components, hooks, and API logic inside `src/features/<feature-name>/`.
+3. Do NOT import directly from internal files of another feature. Only import from that feature's `index.ts`.
+4. Create TypeScript types/interfaces before writing implementation code.
+5. Generate matching unit tests inside `<feature-name>.test.ts`.
