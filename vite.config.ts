@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from "vitest/config"; // ✅ ប្រើ vitest/config ជំនួស vite
 import react from "@vitejs/plugin-react";
 

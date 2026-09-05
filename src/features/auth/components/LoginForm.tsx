@@ -14,6 +14,8 @@ export function LoginForm() {
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,13 +23,15 @@ export function LoginForm() {
     setFormData((prev: LoginFormData) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setApiError(null);
+
+    // 1. Zod Client Validation
     const result = loginSchema.safeParse(formData);
 
     if (!result.success) {
       const formattedErrors: FormErrors = {};
-
       result.error.issues.forEach((issue: z.ZodIssue) => {
         const fieldName = issue.path[0] as keyof LoginFormData;
         if (fieldName === "email" || fieldName === "password") {
@@ -36,22 +40,55 @@ export function LoginForm() {
           }
         }
       });
-
       setErrors(formattedErrors);
       setIsSubmitted(false);
-    } else {
-      setErrors({});
+      return;
+    }
+
+    setErrors({});
+    setIsLoading(true);
+
+    // 2. Async API Request to Server / MSW
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.message || "Invalid credentials or server error");
+      }
+
       setIsSubmitted(true);
+    } catch (err: any) {
+      setApiError(err.message || "An unexpected error occurred");
+      setIsSubmitted(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div style={{ maxWidth: "350px", margin: "40px auto", padding: "20px", border: "1px solid #ccc", borderRadius: "8px", backgroundColor: "#fff" }}>
       <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Login</h2>
+
       {isSubmitted && <p style={{ color: "green", textAlign: "center" }}>✅ Login Successful!</p>}
+
+      {apiError && (
+        <div role="alert" style={{ color: "red", marginBottom: "12px", textAlign: "center", fontSize: "14px" }}>
+          {apiError}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         <div>
+          <label htmlFor="email" style={{ display: "block", marginBottom: "4px", fontSize: "14px", fontWeight: "bold" }}>
+            Email
+          </label>
           <input
+            id="email"
             type="email"
             name="email"
             placeholder="Email"
@@ -61,8 +98,13 @@ export function LoginForm() {
           />
           {errors.email && <span style={{ color: "red", fontSize: "12px" }}>{errors.email}</span>}
         </div>
+
         <div>
+          <label htmlFor="password" style={{ display: "block", marginBottom: "4px", fontSize: "14px", fontWeight: "bold" }}>
+            Password
+          </label>
           <input
+            id="password"
             type="password"
             name="password"
             placeholder="Password"
@@ -72,8 +114,20 @@ export function LoginForm() {
           />
           {errors.password && <span style={{ color: "red", fontSize: "12px" }}>{errors.password}</span>}
         </div>
-        <button type="submit" style={{ padding: "10px", cursor: "pointer", backgroundColor: "#007bff", color: "#fff", border: "none", borderRadius: "4px" }}>
-          Sign In
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          style={{
+            padding: "10px",
+            cursor: isLoading ? "not-allowed" : "pointer",
+            backgroundColor: isLoading ? "#6c757d" : "#007bff",
+            color: "#fff",
+            border: "none",
+            borderRadius: "4px",
+          }}
+        >
+          {isLoading ? "Logging in..." : "Log In"}
         </button>
       </form>
     </div>
