@@ -1,35 +1,27 @@
-name: Vitest Test & Coverage
+name: Run Vitest Tests
 
 on:
   push:
-    branches: [ main, master, dev ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ main, master, dev ]
+    branches: [ main, master ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm ci
 
-      - name: Run Tests with Coverage
-        run: npx vitest run --coverage
-
-      # Upload HTML Coverage Report ជា Artifact លើ GitHub
-      - name: Upload Coverage Artifact
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: coverage-report
-          path: coverage/
+      - name: Run Vitest tests
+        run: npm run test
