@@ -1,3 +1,5 @@
+![Run Vitest Tests](https://github.com/SangSereyVuthy/my_awsome_app/actions/workflows/test.yml/badge.svg)
+
 # 🚀 My Awesome App
 
 ការពិពណ៌នាខ្លីៗអំពីគម្រោងរបស់អ្នកនៅទីនេះ (ឧទាហរណ៍៖ កម្មវិធីនេះបង្កើតឡើងដើម្បីគ្រប់គ្រងកិច្ចការប្រចាំថ្ងៃ...)។
